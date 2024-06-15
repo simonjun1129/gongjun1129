@@ -57,6 +57,8 @@
             border: 1px solid #ccc;
             border-radius: 4px;
             margin-top: 10px;
+            overflow-y: auto;
+            max-height: 40vh; /* Set max height to 40% of the viewport height */
         }
     </style>
 </head>
@@ -66,6 +68,7 @@
         <input id="nickname" type="text" placeholder="请输入昵称">
         <textarea id="inputUrls" placeholder="请输入网址，多个网址连在一起："></textarea>
         <button onclick="processUrls()">处理网址</button>
+        <div class="output" id="output"></div>
     </div>
 
     <script>
@@ -101,64 +104,16 @@
                     ordinalIndicator = String.fromCharCode(0x3251 + ordinalIndex - 21);
                 } else if (ordinalIndex <= 50) {
                     ordinalIndicator = String.fromCharCode(0x32B1 + ordinalIndex - 36);
-                } else if (ordinalIndex <= 116) {
-                    ordinalIndicator = ordinalIndex; 
+                } else if (ordinalIndex <= 100) {
+                    ordinalIndicator = ordinalIndex;
                 } else {
-                    ordinalIndicator = `(${ordinalIndex})`;  
+                    ordinalIndicator = `(${ordinalIndex})`;
                 }
 
                 outputText += `${nickname}${ordinalIndicator}${url}\n`;
             });
 
-            const newPage = `
-                <!DOCTYPE html>
-                <html lang="en">
-                <head>
-                    <meta charset="UTF-8">
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <title>处理结果</title>
-                    <style>
-                        body {
-                            font-family: Arial, sans-serif;
-                            background-image: url('GJ.jpg'); 
-                            background-size: 100%;
-                            background-position: center;
-                            display: flex;
-                            justify-content: center;
-                            align-items: center;
-                            height: 100vh;
-                            margin: 0;
-                            color: black;
-                        }
-                        .container {
-                            background-color: rgba(255, 255, 255, 0.85);
-                            padding: 20px;
-                            border-radius: 8px;
-                            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-                            max-width: 600px;
-                            width: 100%;
-                            color: black;
-                        }
-                        .output {
-                            white-space: pre-wrap;
-                            background-color: #e9ecef;
-                            padding: 20px;
-                            border: 1px solid #ccc;
-                            border-radius: 4px;
-                            max-width: 600px;
-                            width: 100%;
-                        }
-                    </style>
-                </head>
-                <body>
-                    <div class="output">${outputText.replace(/\n/g, '<br>')}</div>
-                </body>
-                </html>
-            `;
-
-            document.open();
-            document.write(newPage);
-            document.close();
+            document.getElementById("output").innerHTML = outputText.replace(/\n/g, '<br>');
         }
     </script>
 </body>
