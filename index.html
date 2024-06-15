@@ -7,7 +7,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-image: url('GJ.jpg'); 
+            background-image: url('GJ.jpg');
             background-size: 100%;
             background-position: center;
             display: flex;
@@ -25,6 +25,7 @@
             max-width: 600px;
             width: 100%;
             color: black;
+            position: relative;
         }
         h1 {
             text-align: center;
@@ -60,6 +61,18 @@
             overflow-y: auto;
             max-height: 40vh;
         }
+        .copy-icon {
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+            display: inline-block;
+        }
+        .copy-icon:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 <body>
@@ -68,7 +81,8 @@
         <input id="nickname" type="text" placeholder="请输入昵称">
         <textarea id="inputUrls" placeholder="请输入网址，多个网址连在一起："></textarea>
         <button onclick="processUrls()">处理网址</button>
-        <div class="output" id="output"></div>
+        <div class="output" id="outputContent"></div>
+        <div class="copy-icon" onclick="copyOutput()">复制</div>
     </div>
 
     <script>
@@ -112,56 +126,17 @@
                 outputText += `${nickname}${ordinalIndicator}${url}\n`;
             });
 
-            const newPage = `
-                <!DOCTYPE html>
-                <html lang="en">
-                <head>
-                    <meta charset="UTF-8">
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <title>处理结果</title>
-                    <style>
-                        body {
-                            font-family: Arial, sans-serif;
-                            background-image: url('GJ.jpg'); 
-                            background-size: 100%;
-                            background-position: center;
-                            display: flex;
-                            justify-content: center;
-                            align-items: center;
-                            height: 100vh;
-                            margin: 0;
-                            color: black;
-                        }
-                        .container {
-                            background-color: rgba(255, 255, 255, 0.85);
-                            padding: 20px;
-                            border-radius: 8px;
-                            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-                            max-width: 600px;
-                            width: 100%;
-                            color: black;
-                        }
-                        .output {
-                            white-space: pre-wrap;
-                            background-color: #e9ecef;
-                            padding: 20px;
-                            border: 1px solid #ccc;
-                            border-radius: 4px;
-                            max-width: 600px;
-                            width: 100%;
-                        }
-                    </style>
-                </head>
-                <body>
-                    <div class="output">${outputText.replace(/\n/g, '<br>')}</div>
-                </body>
-                </html>
-            `;
+            document.getElementById("outputContent").textContent = outputText.trim();
+        }
 
-            const newWindow = window.open("", "_blank");
-            newWindow.document.open();
-            newWindow.document.write(newPage);
-            newWindow.document.close();
+        function copyOutput() {
+            const outputContent = document.getElementById("outputContent").textContent.trim();
+            const tempTextarea = document.createElement("textarea");
+            tempTextarea.value = outputContent;
+            document.body.appendChild(tempTextarea);
+            tempTextarea.select();
+            document.execCommand("copy");
+            document.body.removeChild(tempTextarea);
         }
     </script>
 </body>
