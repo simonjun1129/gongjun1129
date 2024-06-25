@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>网址处理器</title>
+    <title>序号处理器</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -37,6 +37,18 @@
             margin-bottom: 10px;
             border: 1px solid #ccc;
             border-radius: 4px;
+        }
+        input[type="checkbox"] {
+            width: auto;
+            padding: 0;
+            margin-right: 10px;
+            margin-bottom: 0;
+        }
+        label {
+            display: flex;
+            align-items: center;
+            padding: 0;
+            margin-bottom: 10px;
         }
         input:focus, textarea:focus, button:focus {
             outline: none;
@@ -73,14 +85,23 @@
         .copy-icon:hover {
             background-color: #0056b3;
         }
+        .inline {
+            display: inline-block;
+            width: auto;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>网址处理器</h1>
-        <input id="nickname" type="text" placeholder="请输入昵称">
-        <textarea id="inputUrls" placeholder="请输入网址，多个网址连在一起："></textarea>
-        <button onclick="processUrls()">处理网址</button>
+        <h1>序号处理器</h1>
+        <input id="nickname" type="text" placeholder="请输入id : ">
+        <textarea id="inputUrls" placeholder="请输入🔗，🔗全部连在一起："></textarea>
+        <label>
+            <input type="checkbox" id="resetNumbering">
+            <input id="resetNumberingValue" type="number" value="18" class="inline" style="width: 50px";>个帖子
+        </label>
+        
+        <button onclick="processUrls()">处理序号</button>
         <div class="output" id="outputContent"></div>
         <div class="copy-icon" onclick="copyOutput()">复制</div>
     </div>
@@ -89,6 +110,8 @@
         function processUrls() {
             const nickname = document.getElementById("nickname").value.trim();
             const inputUrls = document.getElementById("inputUrls").value.trim();
+            const resetNumbering = document.getElementById("resetNumbering").checked;
+            const resetNumberingValue = parseInt(document.getElementById("resetNumberingValue").value) || 18;
 
             const primaryUrlLength = "https://weibo.com/7461285532/5041645441255634".length;
             const secondaryUrlLength = "https://m.weibo.cn/7590430975/5039498822161065".length;
@@ -110,8 +133,12 @@
             let outputText = "";
 
             urls.forEach((url, index) => {
-                const ordinalIndex = index + 1;
+                let ordinalIndex = index + 1;
                 let ordinalIndicator;
+
+                if (resetNumbering) {
+                    ordinalIndex = ((index % resetNumberingValue) + 1);
+                }
 
                 if (ordinalIndex <= 20) {
                     ordinalIndicator = String.fromCharCode(0x2460 + ordinalIndex - 1);
@@ -137,6 +164,7 @@
             tempTextarea.select();
             document.execCommand("copy");
             document.body.removeChild(tempTextarea);
+            alert("输出内容已复制到剪贴板");
         }
     </script>
 </body>
