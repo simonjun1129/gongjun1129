@@ -50,6 +50,14 @@
             padding: 0;
             margin-bottom: 10px;
         }
+        .inline-label {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .inline-label input {
+            margin-right: 10px;
+        }
         input:focus, textarea:focus, button:focus {
             outline: none;
             border-color: #007bff;
@@ -96,17 +104,24 @@
         <h1>序号处理器</h1>
         <input id="nickname" type="text" placeholder="请输入id : ">
         <textarea id="inputUrls" placeholder="请输入🔗，🔗全部连在一起："></textarea>
-        <label>
-            <input type="checkbox" id="resetNumbering">
-            <input id="resetNumberingValue" type="number" value="18" class="inline" style="width: 50px";>个帖子
-        </label>
-        
+        <div class="inline-label">
+            <label>
+                <input type="checkbox" id="resetNumbering">
+                <input id="resetNumberingValue" type="number" value="18" class="inline" style="width: 50px;">个帖子
+            </label>
+            <label>
+                <input type="checkbox" id="splitCopying"> 分开复制
+            </label>
+        </div>
         <button onclick="processUrls()">处理序号</button>
         <div class="output" id="outputContent"></div>
         <div class="copy-icon" onclick="copyOutput()">复制</div>
     </div>
 
     <script>
+        let copyIndex = 0;
+        let outputParts = [];
+
         function processUrls() {
             const nickname = document.getElementById("nickname").value.trim();
             const inputUrls = document.getElementById("inputUrls").value.trim();
@@ -131,6 +146,7 @@
 
             const urls = Array.from(urlSet);
             let outputText = "";
+            outputParts = [];
 
             urls.forEach((url, index) => {
                 let ordinalIndex = index + 1;
@@ -151,20 +167,44 @@
                 }
 
                 outputText += `${nickname}${ordinalIndicator}${url}\n`;
+
+                if ((index + 1) % resetNumberingValue === 0) {
+                    outputParts.push(outputText.trim());
+                    outputText = "";
+                }
             });
 
-            document.getElementById("outputContent").textContent = outputText.trim();
+            if (outputText.trim() !== "") {
+                outputParts.push(outputText.trim());
+            }
+
+            document.getElementById("outputContent").textContent = outputParts.join("\n");
+            copyIndex = 0;
         }
 
         function copyOutput() {
-            const outputContent = document.getElementById("outputContent").textContent.trim();
-            const tempTextarea = document.createElement("textarea");
-            tempTextarea.value = outputContent;
-            document.body.appendChild(tempTextarea);
-            tempTextarea.select();
-            document.execCommand("copy");
-            document.body.removeChild(tempTextarea);
-            alert("输出内容已复制到剪贴板");
+            const splitCopying = document.getElementById("splitCopying").checked;
+            if (splitCopying) {
+                if (copyIndex < outputParts.length) {
+                    const tempTextarea = document.createElement("textarea");
+                    tempTextarea.value = outputParts[copyIndex];
+                    document.body.appendChild(tempTextarea);
+                    tempTextarea.select();
+                    document.execCommand("copy");
+                    document.body.removeChild(tempTextarea);
+                    copyIndex++;
+                } else {
+                    alert("所有内容已复制完毕");
+                }
+            } else {
+                const outputContent = document.getElementById("outputContent").textContent.trim();
+                const tempTextarea = document.createElement("textarea");
+                tempTextarea.value = outputContent;
+                document.body.appendChild(tempTextarea);
+                tempTextarea.select();
+                document.execCommand("copy");
+                document.body.removeChild(tempTextarea);
+            }
         }
     </script>
 </body>
